@@ -1,39 +1,64 @@
 import { createStore } from "redux";
 
-const add = document.querySelector(".add");
-const minus = document.querySelector(".minus");
-const number = document.querySelector(".num");
+const form = document.querySelector("form");
+const input = document.querySelector("input");
+const ul = document.querySelector(".todos");
 
 const ADD = "ADD";
-const MINUS = "MINUS";
+const DELETE = "DELETE";
 
-number.innerText = 0;
+const reducer = (state = [], action) => {
+  const { id, toDo } = action;
 
-const countModifier = (count = 0, action) => {
   switch (action.type) {
     case ADD:
-      return count + 1;
-    case MINUS:
-      return count - 1;
+      return [{ id, toDo }, ...state];
+    case DELETE:
+      return state.filter((toDo) => toDo.id !== +id);
     default:
-      return count;
+      return state;
   }
 };
 
-const countStore = createStore(countModifier);
+const store = createStore(reducer);
 
-const handleAdd = () => {
-  countStore.dispatch({ type: ADD });
+const addToDo = (toDo, id) => {
+  store.dispatch({ type: ADD, toDo, id });
 };
 
-const handleMinus = () => {
-  countStore.dispatch({ type: MINUS });
+const deleteToDo = (event) => {
+  const {
+    target: {
+      parentNode: { id },
+    },
+  } = event;
+
+  store.dispatch({ type: DELETE, id });
 };
 
-const onChange = () => {
-  number.innerText = countStore.getState();
+const updateToDos = () => {
+  const toDos = store.getState();
+  ul.innerHTML = "";
+  toDos.forEach((todo) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.innerText = "DEL";
+    btn.addEventListener("click", deleteToDo);
+    li.innerText = todo.toDo;
+    li.id = todo.id;
+    li.appendChild(btn);
+    ul.appendChild(li);
+  });
 };
 
-countStore.subscribe(onChange);
-add.addEventListener("click", handleAdd);
-minus.addEventListener("click", handleMinus);
+store.subscribe(updateToDos);
+
+const onSubmit = (event) => {
+  event.preventDefault();
+  const toDo = input.value;
+  const id = Date.now();
+  input.value = "";
+  addToDo(toDo, id);
+};
+
+form.addEventListener("submit", onSubmit);
