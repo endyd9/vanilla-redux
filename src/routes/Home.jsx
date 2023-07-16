@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { actionCreators } from "../store";
+import { add } from "../store";
 import ToDo from "../components/ToDo";
 
 function Home({ toDos, addToDo }) {
@@ -10,6 +10,7 @@ function Home({ toDos, addToDo }) {
   }
   function onSubmit(event) {
     event.preventDefault();
+    if (text === "") return;
     setText("");
     addToDo(text);
   }
@@ -35,7 +36,7 @@ function mapStateToProps(state) {
 
 function mapDispatchProps(dispatch) {
   return {
-    addToDo: (text) => dispatch(actionCreators.addToDo(text)),
+    addToDo: (text) => dispatch(add(text)),
   };
 }
 
