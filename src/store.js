@@ -13,7 +13,7 @@ const toDo = createSlice({
       state.unshift({ text: action.payload, id: Date.now() });
     },
     remove: (state, action) =>
-      state.filter((toDo) => toDo.id !== action.payload),
+      state.filter((toDo) => toDo.id !== +action.payload),
   },
 });
 
